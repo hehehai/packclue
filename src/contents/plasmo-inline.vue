@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import type { PlasmoContentScript, PlasmoGetInlineAnchor } from "plasmo";
+import type { PlasmoContentScript, PlasmoGetInlineAnchor, PlasmoMountShadowHost } from "plasmo";
 
 export const config: PlasmoContentScript = {
   matches: ["https://www.plasmo.com/*"]
@@ -13,10 +13,18 @@ export const config: PlasmoContentScript = {
 export const getInlineAnchor: PlasmoGetInlineAnchor = () =>
   document.querySelector("#supercharge > h2 > span")
 
-// Use this to optimize unmount lookups
-export const getShadowHostId = () => "plasmo-inline-example-unique-id"
+const mountShadowHost: PlasmoMountShadowHost = ({
+  inlineAnchor,
+  shadowHost
+}) => {
+  inlineAnchor!.insertBefore(shadowHost!, inlineAnchor!.firstChild)
+}
 
 export default defineComponent({
+  plasmo: {
+    getInlineAnchor,
+    mountShadowHost
+  },
   setup() {
     return {}
   }
